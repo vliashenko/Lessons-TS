@@ -1,49 +1,33 @@
-import {FC, useState, useEffect} from "react";
-import Card, {CardVariant} from "./components/Card";
-import { ITodo, IUser } from "./types/types";
-import axios from "axios";
-import List from "./components/List";
-import UserItem from "./components/UserItem";
-import TodoItem from "./components/TodoItem";
-import EventsExamples from "./components/EventsExamples";
+import { FC } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import UserPage from "./components/UserPage";
+import TodosPage from "./components/TodosPage";
+import HomePage from "./components/HomePage";
+import NotFound from "./components/404";
+import Layout from "./components/Layout";
+import UserItemPage from "./components/UserItemPage";
+import TodoItemPage from "./components/TodoItemPage";
 
 const App: FC = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [todos, setTodos] = useState<ITodo[]>([]);
-
-  useEffect(() => {
-    fetchUsers();
-    fetchTodos();
-  }, [])
-
-  async function fetchUsers() {
-    try {
-      const response = await axios.get<IUser[]>("https://jsonplaceholder.typicode.com/users")
-      setUsers(response.data)
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async function fetchTodos() {
-    try {
-      const response = await axios.get<ITodo[]>("https://jsonplaceholder.typicode.com/todos?_limit=10")
-      setTodos(response.data)
-    } catch (e) {
-      console.log(e);
-    }
-  }
   return (
-    <div className="root">
-      <Card onClick={(num: number) => console.log(num)} width="200px" height="200px" variant={CardVariant.outlined}>
-        <button className="card-button">Button</button>
-      </Card>
-
-      <List items={users} renderItem={(user: IUser) => <UserItem user={user} key={user.id}/>}/>
-      <List items={todos} renderItem={(todo: ITodo) => <TodoItem todo={todo} key={todo.id}/>}/>
-
-      <EventsExamples/>
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route
+            path="/"
+            element={<HomePage title="React App using TypeScript 👨🏻‍💻" />}
+          />
+          <Route path="/user" element={<UserPage />} />
+          <Route path="/user/:id" element={<UserItemPage/>}/>
+          <Route path="/todo" element={<TodosPage />} />
+          <Route path="/todo/:id" element={<TodoItemPage/>}/>
+          <Route
+            path="*"
+            element={<NotFound title="404 Something is going wrong..." />}
+          />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 };
 
